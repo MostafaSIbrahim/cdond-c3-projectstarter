@@ -51,7 +51,7 @@ jobs:
             paths: [frontend/node_modules]
             key: frontend-build
 
-    test-backend:
+  test-backend:
     docker:
       - image: cimg/node:18.2.0
     steps:
