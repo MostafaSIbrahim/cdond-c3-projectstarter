@@ -149,7 +149,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - inventory.txt
+            - .circleci/ansible/inventory.txt
       - destroy_environments      
 
   configure-infrastructure:
@@ -163,7 +163,7 @@ jobs:
           fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
       # attach workspace
       - attach_workspace:
-          at: ~/
+          at: ~/.circleci/ansible
       - run:
           name: Install dependencies
           command: |
