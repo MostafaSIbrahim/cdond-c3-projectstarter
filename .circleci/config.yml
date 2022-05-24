@@ -158,10 +158,8 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
-      # attach workspace
       - attach_workspace:
           at: ~/
       - run:
@@ -173,6 +171,10 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt configure-server.yml
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
       - destroy_environments      
   
   run-migrations:
@@ -188,18 +190,90 @@ jobs:
             npm install
             # npm audit fix
             npm run migrations > migrations_dump.txt
-            echo migrations_dump.txt
+            echo < migrations_dump.txt
       - run:
           name: Send migration status to kvdb.io
           command: |   
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
+              echo "migration success"
               curl https://kvdb.io/BbSEdx5hwR5B6tMh7cgiF2/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'migration Success'
             fi        
       - save_cache:
           paths: [backend]
           key: backend-build01          
-      - destroy_environments           
+      - destroy_environments          
+
+deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - attach_workspace:
+          at: ~/
+      - checkout
+      - run:
+          name: "update apt packages."
+          become: yes
+          apt:
+            update_cache: yes
+      - run:
+          name: "upgrade packages"
+          become: yes
+          apt:
+            upgrade: yes
+      - run:
+          name: remove dependencies that are no longer required
+          become: yes
+          apt:
+            autoremove: yes
+      - run:
+          name: "install dependencies."
+          become: yes
+          apt:
+            name: ["nodejs", "npm"]
+            state: latest
+            update_cache: yes
+      - run:
+          name: "install pm2"
+          become: yes
+          npm:
+            name: pm2
+            global: yes
+            production: yes
+            state: present
+      - run:
+          name: "install AWD CLI"
+          become: yes
+          apt:
+            install awscli
+      - run:
+          name: "Install tar gzip"
+          become: yes
+          command: |
+            yum install -y tar gzip      
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+      - run:
+          name: Get backend url
+          command: |
+            # your code here
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress')
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy_environments       
 workflows:
   default:
     jobs:
@@ -219,3 +293,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [configure-infrastructre]    
