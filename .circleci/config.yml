@@ -220,17 +220,17 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            apt-get update
+            apt update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            apt-get upgrade
+            apt upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            apt-get autoremove
+            apt autoremove
       - run:
           name: install python
           become: yes
