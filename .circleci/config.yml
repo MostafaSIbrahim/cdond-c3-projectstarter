@@ -209,6 +209,11 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: "Install tar gzip"
+          become: yes
+          command: |
+            yum install -y tar gzip      
       - attach_workspace:
           at: ~/
       - run:
@@ -247,11 +252,6 @@ jobs:
           become: yes
           command:
             apt install awscli
-      - run:
-          name: "Install tar gzip"
-          become: yes
-          command: |
-            yum install -y tar gzip      
       - run:
           name: Install dependencies
           command: |
