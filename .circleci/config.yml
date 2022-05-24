@@ -214,38 +214,39 @@ jobs:
       - run:
           name: "update apt packages."
           become: yes
-          apt:
-            update_cache: yes
+          command: |
+            apt-get update
       - run:
           name: "upgrade packages"
           become: yes
-          apt:
-            upgrade: yes
+          command: |
+            apt-get upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
-          apt:
-            autoremove: yes
+          command: |
+            apt-get autoremove
       - run:
-          name: "install dependencies."
+          name: install python
           become: yes
-          apt:
-            name: ["nodejs", "npm"]
-            state: latest
-            update_cache: yes
+          command: |
+            apt install python3
+      - run:
+          name: "install NodeJS."
+          become: yes
+          command: |
+            apt install nodejs
+            apt install npm
       - run:
           name: "install pm2"
           become: yes
-          npm:
-            name: pm2
-            global: yes
-            production: yes
-            state: present
+          command: |
+            npm install pm2@latest -g
       - run:
           name: "install AWD CLI"
           become: yes
-          apt:
-            install awscli
+          command:
+            apt install awscli
       - run:
           name: "Install tar gzip"
           become: yes
