@@ -205,75 +205,75 @@ jobs:
       - destroy_environments          
 
   deploy-frontend:
-      docker:
-        - image: amazon/aws-cli
-      steps:
-        - attach_workspace:
-            at: ~/
-        - checkout
-        - run:
-            name: "update apt packages."
-            become: yes
-            apt:
-              update_cache: yes
-        - run:
-            name: "upgrade packages"
-            become: yes
-            apt:
-              upgrade: yes
-        - run:
-            name: remove dependencies that are no longer required
-            become: yes
-            apt:
-              autoremove: yes
-        - run:
-            name: "install dependencies."
-            become: yes
-            apt:
-              name: ["nodejs", "npm"]
-              state: latest
-              update_cache: yes
-        - run:
-            name: "install pm2"
-            become: yes
-            npm:
-              name: pm2
-              global: yes
-              production: yes
-              state: present
-        - run:
-            name: "install AWD CLI"
-            become: yes
-            apt:
-              install awscli
-        - run:
-            name: "Install tar gzip"
-            become: yes
-            command: |
-              yum install -y tar gzip      
-        - run:
-            name: Install dependencies
-            command: |
-              apk add --update ansible
-        - run:
-            name: Get backend url
-            command: |
-              # your code here
-              export BACKEND_IP=$(aws ec2 describe-instances \
-                --query 'Reservations[*].Instances[*].PublicIpAddress')
-              export API_URL="http://${BACKEND_IP}:3030"
-              echo "${API_URL}"
-              echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-              cat frontend/.env
-        - run:
-            name: Deploy frontend objects
-            command: |
-              cd frontend
-              npm install
-              npm run build
-              tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-              aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-        - destroy_environments       
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "update apt packages."
+          become: yes
+          apt:
+            update_cache: yes
+      - run:
+          name: "upgrade packages"
+          become: yes
+          apt:
+            upgrade: yes
+      - run:
+          name: remove dependencies that are no longer required
+          become: yes
+          apt:
+            autoremove: yes
+      - run:
+          name: "install dependencies."
+          become: yes
+          apt:
+            name: ["nodejs", "npm"]
+            state: latest
+            update_cache: yes
+      - run:
+          name: "install pm2"
+          become: yes
+          npm:
+            name: pm2
+            global: yes
+            production: yes
+            state: present
+      - run:
+          name: "install AWD CLI"
+          become: yes
+          apt:
+            install awscli
+      - run:
+          name: "Install tar gzip"
+          become: yes
+          command: |
+            yum install -y tar gzip      
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+      - run:
+          name: Get backend url
+          command: |
+            # your code here
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress')
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy_environments       
 workflows:
   default:
     jobs:
