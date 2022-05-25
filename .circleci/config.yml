@@ -206,7 +206,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/node:16.15.0
     steps:
       - checkout
       - run:
@@ -220,37 +220,42 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            yum -y update
+            apt -y update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            yum -y upgrade
+            apt -y upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            yum -y autoremove 
+            apt -y autoremove 
       - run:
           name: install python
           become: yes
           command: |
-            yum -y install python3
+            apt -y install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            yum -y install nodejs
-            yum -y install npm
+            apt -y install nodejs
+            apt -y install npm
       - run:
           name: "install pm2"
           become: yes
           command: |
-            npm -y install pm2@latest -g
+            apt -y install pm2@latest -g
       - run:
           name: Install dependencies
           command: |
             apk -y add --update ansible
+      - run:
+          name: Install AWS CLI
+          become: yes
+          command: |
+            apt -y install awscli      
       - run:
           name: Get backend url
           command: |
