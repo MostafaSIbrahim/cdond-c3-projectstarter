@@ -235,27 +235,22 @@ jobs:
           name: install python
           become: yes
           command: |
-            yum install python3
+            yum -y install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            yum install nodejs
-            yum install npm
+            yum -y install nodejs
+            yum -y install npm
       - run:
           name: "install pm2"
           become: yes
           command: |
-            npm install pm2@latest -g
-      - run:
-          name: "install AWD CLI"
-          become: yes
-          command:
-            apt install awscli
+            npm -y install pm2@latest -g
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
+            apk -y add --update ansible
       - run:
           name: Get backend url
           command: |
