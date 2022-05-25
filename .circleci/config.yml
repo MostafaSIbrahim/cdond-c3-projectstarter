@@ -213,7 +213,7 @@ jobs:
           name: "Install tar gzip"
           become: yes
           command: |
-            yum install -y tar gzip      
+            apt install -y tar gzip      
       - attach_workspace:
           at: ~/
       - run:
