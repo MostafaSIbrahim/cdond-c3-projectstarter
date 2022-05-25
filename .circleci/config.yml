@@ -250,7 +250,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk -y add --update ansible
+            sudo apt -y install ansible
       - run:
           name: Install AWS CLI
           become: yes
