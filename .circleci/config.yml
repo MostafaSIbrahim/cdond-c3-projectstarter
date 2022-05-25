@@ -220,34 +220,28 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            apt:
-              update_cache: yes
+            apt-get update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            apt:
-              upgrade: yes
+            apt-get upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            apt:
-              autoremove: yes
+            apt-get autoremove
       - run:
           name: install python
           become: yes
           command: |
-            apt:
-              install python3
+            apt install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            apt:
-              install nodejs
-            apt:
-              install npm
+            apt install nodejs
+            apt install npm
       - run:
           name: "install pm2"
           become: yes
@@ -257,7 +251,7 @@ jobs:
           name: "install AWD CLI"
           become: yes
           command:
-            sudo apt install awscli
+            apt install awscli
       - run:
           name: Install dependencies
           command: |
