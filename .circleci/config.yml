@@ -246,11 +246,11 @@ jobs:
           name: "install pm2"
           become: yes
           command: |
-            sudo apt -y install pm2@latest -g
+            npm install pm2 -g
       - run:
           name: Install dependencies
           command: |
-            sudo apk -y add --update ansible
+            apk -y add --update ansible
       - run:
           name: Install AWS CLI
           become: yes
