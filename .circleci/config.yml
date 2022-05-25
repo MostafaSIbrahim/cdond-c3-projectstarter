@@ -220,17 +220,17 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            yum update:y
+            yum -y update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            yum upgrade:y
+            yum -y upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            yum autoremove:y
+            yum -y autoremove 
       - run:
           name: install python
           become: yes
