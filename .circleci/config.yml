@@ -213,49 +213,49 @@ jobs:
           name: "Install tar gzip"
           become: yes
           command: |
-            apt install -y tar gzip      
+            sudo apt install -y tar gzip      
       - attach_workspace:
           at: ~/
       - run:
           name: "update apt packages."
           become: yes
           command: |
-            apt -y update
+            sudo apt -y update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            apt -y upgrade
+            sudo apt -y upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            apt -y autoremove 
+            sudo apt -y autoremove 
       - run:
           name: install python
           become: yes
           command: |
-            apt -y install python3
+            sudo apt -y install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            apt -y install nodejs
-            apt -y install npm
+            sudo apt -y install nodejs
+            sudo apt -y install npm
       - run:
           name: "install pm2"
           become: yes
           command: |
-            apt -y install pm2@latest -g
+            sudo apt -y install pm2@latest -g
       - run:
           name: Install dependencies
           command: |
-            apk -y add --update ansible
+            sudo apk -y add --update ansible
       - run:
           name: Install AWS CLI
           become: yes
           command: |
-            apt -y install awscli      
+            sudo apt -y install awscli      
       - run:
           name: Get backend url
           command: |
