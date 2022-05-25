@@ -220,28 +220,34 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            sudo apt update
+            apt:
+              update_cache: yes
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            sudo apt upgrade
+            apt:
+              upgrade: yes
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            sudo apt autoremove
+            apt:
+              autoremove: yes
       - run:
           name: install python
           become: yes
           command: |
-            sudo apt install python3
+            apt:
+              install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            sudo apt install nodejs
-            sudo apt install npm
+            apt:
+              install nodejs
+            apt:
+              install npm
       - run:
           name: "install pm2"
           become: yes
