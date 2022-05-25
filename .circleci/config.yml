@@ -220,28 +220,28 @@ jobs:
           name: "update apt packages."
           become: yes
           command: |
-            apt-get update
+            yum update
       - run:
           name: "upgrade packages"
           become: yes
           command: |
-            apt-get upgrade
+            yum upgrade
       - run:
           name: remove dependencies that are no longer required
           become: yes
           command: |
-            apt-get autoremove
+            yum autoremove
       - run:
           name: install python
           become: yes
           command: |
-            apt install python3
+            yum install python3
       - run:
           name: "install NodeJS."
           become: yes
           command: |
-            apt install nodejs
-            apt install npm
+            yum install nodejs
+            yum install npm
       - run:
           name: "install pm2"
           become: yes
