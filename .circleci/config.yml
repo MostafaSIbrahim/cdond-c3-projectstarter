@@ -111,15 +111,12 @@ jobs:
           name: Scan Back-end
           command: |
              cd backend
-             #npm audit fix --audit-level=critical --force
-             #npm audit fix --force
              npm audit fix --force
-             #npm install
              npm audit --audit-level= "critical" 
       - save_cache:
           paths: 'backend'
           key: backend-build01   
-                 
+
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
