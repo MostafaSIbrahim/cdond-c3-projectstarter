@@ -91,10 +91,10 @@ jobs:
             name: Scan front-end
             command: |
               cd frontend
-              npm install
+              #npm install
               #npm audit fix --audit-level=critical --force
               npm audit fix --force
-              npm audit fix --force
+              #npm audit fix --force
               npm audit --audit-level= "critical"
         - save_cache:
             paths: [frontend]
@@ -114,7 +114,7 @@ jobs:
              #npm audit fix --audit-level=critical --force
              #npm audit fix --force
              npm audit fix --force
-             npm install
+             #npm install
              npm audit --audit-level= "critical" 
       - save_cache:
           paths: 'backend'
