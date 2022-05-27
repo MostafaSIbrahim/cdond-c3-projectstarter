@@ -181,7 +181,6 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm install
             npm audit fix --force
             npm run migrations > migrations_dump.txt
             echo < migrations_dump.txt
