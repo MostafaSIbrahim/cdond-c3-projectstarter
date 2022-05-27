@@ -181,13 +181,6 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            #npm cache clean --force
-            #rm -rf node_modules package-lock.json
-            #npm audit fix --force
-            #npm install --save-dev webpack@5.72.1
-            #npm update path-parse --depth 3
-            #npm update kind-of --depth 10
-            #npm audit --audit-level=critical 
             npm run migrations > migrations_dump.txt
             echo < migrations_dump.txt
       - run:
@@ -234,17 +227,6 @@ jobs:
           become: yes
           command: |
             sudo apt -y install python3
-      - run:
-          name: "install NodeJS."
-          become: yes
-          command: |
-            sudo apt -y install nodejs
-            sudo apt -y install npm
-      - run:
-          name: "install pm2"
-          become: yes
-          command: |
-            npm install pm2 -g
       - run:
           name: Install dependencies
           command: |
