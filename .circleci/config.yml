@@ -11,10 +11,12 @@ commands:
             command: |
               aws cloudformation delete-stack --stack-name FinalProject-frontend-${CIRCLE_WORKFLOW_ID:0:7}
               aws cloudformation delete-stack --stack-name FinalProject-backend-${CIRCLE_WORKFLOW_ID:0:7}
+nodedoker: &nodedoker
+  docker:
+    - image: cimg/node:13.8.0
 jobs:
   build-frontend:
-    docker:
-      - image: cimg/node:16.15.0
+    <<: *nodedoker
     steps:
       - checkout
       - restore_cache:
@@ -30,8 +32,7 @@ jobs:
           key: frontend-build01
 
   build-backend:
-    docker:
-      - image: cimg/node:16.15.0
+    <<: *nodedoker
     steps:
       - checkout
       - restore_cache:
@@ -47,8 +48,7 @@ jobs:
           key: backend-build01
 
   test-frontend:
-      docker:
-        - image: cimg/node:16.15.0
+      <<: *nodedoker
       steps:
         - checkout
         - restore_cache:
@@ -64,8 +64,7 @@ jobs:
             key: frontend-build01
 
   test-backend:
-    docker:
-      - image: cimg/node:16.15.0
+    <<: *nodedoker
     steps:
       - checkout
       - restore_cache:
@@ -81,8 +80,7 @@ jobs:
           key: backend-build01
 
   scan-frontend:
-      docker:
-        - image: cimg/node:16.15.0
+      <<: *nodedoker
       steps:
         - checkout
         - restore_cache:
@@ -91,18 +89,14 @@ jobs:
             name: Scan front-end
             command: |
               cd frontend
-              #npm install
-              #npm audit fix --audit-level=critical --force
               npm audit fix --force
-              #npm audit fix --force
               npm audit --audit-level= "critical"
         - save_cache:
             paths: [frontend]
             key: frontend-build01
 
   scan-backend:
-    docker:
-      - image: cimg/node:16.15.0
+    <<: *nodedoker
     steps:
       - checkout
       - restore_cache:
