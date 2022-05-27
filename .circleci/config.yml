@@ -183,6 +183,8 @@ jobs:
             cd backend
             npm audit fix --force
             npm install --save-dev webpack@5.72.1
+            npm update path-parse --depth 3
+            npm update kind-of --depth 10
             npm audit --audit-level=critical 
             npm run migrations > migrations_dump.txt
             echo < migrations_dump.txt
