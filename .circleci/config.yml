@@ -280,12 +280,12 @@ jobs:
           name: "Install tar gzip"
           become: yes
           command: |
-            sudo apt install -y tar gzip      
+            apk add --update tar gzip      
       - run:
           name: install nodejs
           become: yes
           command: |
-            sudo apt install nodejs
+            apk add --update nodejs
       - run:
           name: install npm
           become: yes
