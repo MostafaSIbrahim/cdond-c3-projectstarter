@@ -200,13 +200,15 @@ jobs:
     <<: *nodedoker
     steps:
       - checkout
+      - restore_cache:
+          keys: [frontend-build01]
       - run:
           name: "Install tar gzip"
           become: yes
           command: |
             sudo apt install -y tar gzip      
-      - attach_workspace:
-          at: ~/
+#      - attach_workspace:
+#          at: ~/
       - run:
           name: "update apt packages."
           become: yes
@@ -250,12 +252,15 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
-            npm install
-            npm audit fix --force
-            npm audit --audit-level=critical
+#            npm install
+#            npm audit fix --force
+#            npm audit --audit-level=critical
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - save_cache:
+          paths: [frontend]
+          key: frontend-build01            
       - destroy_environments       
 workflows:
   default:
