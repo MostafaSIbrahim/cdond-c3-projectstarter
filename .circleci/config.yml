@@ -261,7 +261,55 @@ jobs:
       - save_cache:
           paths: [frontend]
           key: frontend-build01            
-      - destroy_environments       
+      - destroy_environments
+
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+      - run:
+          name: "Install tar gzip"
+          become: yes
+          command: |
+            sudo apt install -y tar gzip      
+      - run:
+          name: install nodejs
+          become: yes
+          command: |
+            sudo apt install nodejs
+      - run:
+          name: install npm
+          become: yes
+          command: |
+            npm install pm2 -g      
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+      - destroy_environments      
+
 workflows:
   default:
     jobs:
@@ -272,9 +320,9 @@ workflows:
       - test-backend:
           requires: [build-backend]    
       - scan-frontend:
-          requires: [test-frontend]
+          requires: [build-frontend]
       - scan-backend:
-          requires: [test-backend]
+          requires: [build-backend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend]
       - configure-infrastructure:
