@@ -290,6 +290,11 @@ jobs:
           name: install npm
           become: yes
           command: |
+            apk add --update npm
+      - run:
+          name: install pm2
+          become: yes
+          command: |
             npm install pm2 -g      
       - run:
           name: Deploy backend
