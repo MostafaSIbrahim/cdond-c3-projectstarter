@@ -301,7 +301,7 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            rm package-lock.json
+            
             npm install
             npm update
             npm audit fix --force
