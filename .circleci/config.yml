@@ -301,8 +301,9 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            npm audit fix --force
             npm install
+            npm audit fix --force
+            
             npm run build
             cd ..
             # Zip the directory
