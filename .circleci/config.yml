@@ -265,8 +265,7 @@ jobs:
       - destroy_environments
 
   deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
+    <<: *nodedoker
     steps:
       - checkout
       - add_ssh_keys:
@@ -283,28 +282,19 @@ jobs:
           command: |
             apk add --update tar gzip      
       - run:
-          name: install nodejs
+          name: install python
           become: yes
           command: |
-            apk add --update nodejs@13.8.0
-      - run:
-          name: install npm
-          become: yes
-          command: |
-            apk add --update npm
-      - run:
-          name: install pm2 after installing npm
-          become: yes
-          command: |
-            npm install pm2 -g      
+            sudo apt -y install python3
+
       - run:
           name: Deploy backend
           command: |
             cd backend
             
-            npm install
-            npm update
-            npm audit fix --force
+            #npm install
+            #npm update
+            #npm audit fix --force
             npm run build
             cd ..
             # Zip the directory
