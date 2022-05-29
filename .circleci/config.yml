@@ -286,7 +286,7 @@ jobs:
           name: install nodejs
           become: yes
           command: |
-            apk add --update nodejs
+            apk add --update nodejs@13.8.0
       - run:
           name: install npm
           become: yes
