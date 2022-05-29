@@ -106,6 +106,7 @@ jobs:
           command: |
              cd backend
              npm audit fix --force
+             npm update mkdirp --depth 2
              npm install --save-dev webpack@5.72.1
              npm audit --audit-level=critical 
       - save_cache:
