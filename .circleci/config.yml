@@ -301,7 +301,6 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            
             npm install
             npm update
             npm audit fix --force
