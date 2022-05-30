@@ -346,4 +346,4 @@ workflows:
       # - deploy-backend
       #     #requires: [deploy-frontend]    
       - notify_on_success:
-        requires: [build-frontend, build-backend, test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [build-frontend, build-backend, test-frontend, test-backend, scan-frontend, scan-backend]
