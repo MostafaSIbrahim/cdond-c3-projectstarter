@@ -43,40 +43,37 @@ jobs:
              npm install
              npm run build 
       - save_cache:
-          paths: [backend]
+          paths: [backend/node_modules]
           key: backend-mybuild
 
-  # test-frontend:
-  #     <<: *nodedoker
-  #     steps:
-  #       - checkout
-  #       - restore_cache:
-  #           keys: [frontend-build01]
-  #       - run:
-  #           name: Test front-end
-  #           command: |
-  #             cd frontend
-  #             npm install
-  #             npm run test
-  #       - save_cache:
-  #           paths: [frontend]
-  #           key: frontend-build01
+  test-frontend:
+      <<: *nodedoker
+      steps:
+        - checkout
+        - restore_cache:
+            keys: [frontend-mybuild]
+        - run:
+            name: Test front-end
+            command: |
+              cd frontend
+              npm install
+              npm run test
 
-  # test-backend:
-  #   <<: *nodedoker
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-build01]
-  #     - run:
-  #         name: Test Back-end
-  #         command: |
-  #            cd backend
-  #            npm install
-  #            npm run test 
-  #     - save_cache:
-  #         paths: [backend]
-  #         key: backend-build01
+  test-backend:
+    <<: *nodedoker
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-mybuild]
+      - run:
+          name: Test Back-end
+          command: |
+             cd backend
+             npm install
+             npm run test 
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build01
 
   # scan-frontend:
   #     <<: *nodedoker
@@ -322,10 +319,10 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]    
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]    
       # - scan-frontend:
       #     requires: [build-frontend]
       # - scan-backend:
