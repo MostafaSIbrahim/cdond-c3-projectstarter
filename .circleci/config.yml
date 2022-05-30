@@ -73,18 +73,18 @@ jobs:
              npm run test 
 
   scan-frontend:
-      <<: *nodedoker
-      steps:
-        - checkout
-        - restore_cache:
-            keys: [frontend-mybuild]
-        - run:
-            name: Scan front-end
-            command: |
-              cd frontend
-              npm install
-              npm audit fix --force --audit-level=critical
-              npm audit --audit-level=critical
+    <<: *nodedoker
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-mybuild]
+      - run:
+          name: Scan front-end
+          command: |
+            cd frontend
+            npm install
+            npm audit fix --force --audit-level=critical
+            npm audit --audit-level=critical
 
   scan-backend:
     <<: *nodedoker
