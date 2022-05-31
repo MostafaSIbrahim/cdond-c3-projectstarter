@@ -173,6 +173,7 @@ jobs:
     steps:
       - checkout
       - install_ansible
+      - install_awscli
       - add_ssh_keys:
           fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
       - attach_workspace:
