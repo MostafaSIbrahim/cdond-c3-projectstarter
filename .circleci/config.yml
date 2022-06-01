@@ -239,42 +239,6 @@ jobs:
       - install_nodejs
       - restore_cache:
           keys: [frontend-mybuild]
-      # - run:
-      #     name: "Install tar gzip"
-      #     become: yes
-      #     command: |
-      #       sudo apt install -y tar gzip      
-      # #- attach_workspace:
-      # #    at: ~/
-      # - run:
-      #     name: "update apt packages."
-      #     become: yes
-      #     command: |
-      #       sudo apt -y update
-      # - run:
-      #     name: "upgrade packages"
-      #     become: yes
-      #     command: |
-      #       sudo apt -y upgrade
-      # - run:
-      #     name: remove dependencies that are no longer required
-      #     become: yes
-      #     command: |
-      #       sudo apt -y autoremove 
-      # - run:
-      #     name: install python
-      #     become: yes
-      #     command: |
-      #       sudo apt -y install python3
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt -y install ansible
-      # - run:
-      #     name: Install AWS CLI
-      #     become: yes
-      #     command: |
-      #       sudo apt -y install awscli      
       - run:
           name: Install dependancies
           command: |
@@ -313,8 +277,8 @@ jobs:
           fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
       - attach_workspace:
           at: ~/
-      - restore_cahce:
-          keys:[backend-mybuild]    
+      - restore_cache:
+          keys: [backend-mybuild]
       - run:
           name: Install Dependancies
           command: |
