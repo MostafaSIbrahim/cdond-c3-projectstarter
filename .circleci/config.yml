@@ -57,7 +57,7 @@ commands:
       - run:
           name: install nodejs 13
           command: |
-            curl -fsSL -o https://npm.nodesource.com/setup_13.x | sudo -E bash -
+            curl -fsSL -o https://deb.nodesource.com/setup_18.x | sudo -E bash -
             sudo apt install -y nodejs
 nodedoker: &nodedoker
   docker:
