@@ -58,9 +58,6 @@ commands:
           name: download nodejs 13 image
           shell: |
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-      - run:
-          name: install nodejs
-          command: |
             sudo apt install -y nodejs
 nodedoker: &nodedoker
   docker:
