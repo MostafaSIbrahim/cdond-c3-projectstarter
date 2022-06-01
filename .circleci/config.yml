@@ -24,9 +24,9 @@ commands:
           name: Install Ansible
           command: |
             sudo apt update
-            sudo apt install software-properties-common
+            sudo apt install software-properties-common -y
             sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible      
+            sudo apt install ansible -y      
   destroy_environments:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
@@ -51,7 +51,14 @@ commands:
               npm install
               npm run migration:revert
             fi  
-
+  install_nodejs:
+    description: install node.js 13
+    steps:
+      - run:
+          name: install nodejs 13
+          command: |
+            curl -fsSL -o https://rpm.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
 nodedoker: &nodedoker
   docker:
     - image: cimg/node:13.8.0
@@ -223,126 +230,117 @@ jobs:
       - destroy_environments
       - revert_migrations        
 
-  # deploy-frontend:
-  #   <<: *nodedoker
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-build01]
-  #     - run:
-  #         name: "Install tar gzip"
-  #         become: yes
-  #         command: |
-  #           sudo apt install -y tar gzip      
-  #     #- attach_workspace:
-  #     #    at: ~/
-  #     - run:
-  #         name: "update apt packages."
-  #         become: yes
-  #         command: |
-  #           sudo apt -y update
-  #     - run:
-  #         name: "upgrade packages"
-  #         become: yes
-  #         command: |
-  #           sudo apt -y upgrade
-  #     - run:
-  #         name: remove dependencies that are no longer required
-  #         become: yes
-  #         command: |
-  #           sudo apt -y autoremove 
-  #     - run:
-  #         name: install python
-  #         become: yes
-  #         command: |
-  #           sudo apt -y install python3
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           sudo apt -y install ansible
-  #     - run:
-  #         name: Install AWS CLI
-  #         become: yes
-  #         command: |
-  #           sudo apt -y install awscli      
-  #     - run:
-  #         name: Get backend url
-  #         command: |
-  #           # your code here
-  #           export BACKEND_IP=$(aws ec2 describe-instances \
-  #             --query 'Reservations[*].Instances[*].PublicIpAddress')
-  #           export API_URL="http://${BACKEND_IP}:3030"
-  #           echo "${API_URL}"
-  #           echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-  #           cat frontend/.env
-  #     - run:
-  #         name: Deploy frontend objects
-  #         command: |
-  #           cd frontend
-  #           #npm install
-  #           #npm audit fix --force
-  #           #npm audit --audit-level=critical
-  #           npm run build
-  #           tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-  #           aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-  #     - save_cache:
-  #         paths: [frontend]
-  #         key: frontend-build01            
-  #     - destroy_environments
+  deploy-frontend:
+    docker:
+      image: cimg/base:stable
+    steps:
+      - checkout
+      - install_awscli
+      - install_nodejs
+      - restore_cache:
+          keys: [frontend-mybuild]
+      # - run:
+      #     name: "Install tar gzip"
+      #     become: yes
+      #     command: |
+      #       sudo apt install -y tar gzip      
+      # #- attach_workspace:
+      # #    at: ~/
+      # - run:
+      #     name: "update apt packages."
+      #     become: yes
+      #     command: |
+      #       sudo apt -y update
+      # - run:
+      #     name: "upgrade packages"
+      #     become: yes
+      #     command: |
+      #       sudo apt -y upgrade
+      # - run:
+      #     name: remove dependencies that are no longer required
+      #     become: yes
+      #     command: |
+      #       sudo apt -y autoremove 
+      # - run:
+      #     name: install python
+      #     become: yes
+      #     command: |
+      #       sudo apt -y install python3
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       sudo apt -y install ansible
+      # - run:
+      #     name: Install AWS CLI
+      #     become: yes
+      #     command: |
+      #       sudo apt -y install awscli      
+      - run:
+          name: Install dependancies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-$(CIRCLECI_WORKFLOW_ID:0:7)" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy_environments
+      - revert_migrations
 
-  # deploy-backend:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           apk add --update ansible
-  #     - run:
-  #         name: "Install tar gzip"
-  #         become: yes
-  #         command: |
-  #           apk add --update tar gzip      
-  #     - run:
-  #         name: install nodejs
-  #         become: yes
-  #         command: |
-  #           apk add --update nodejs
-  #     - run:
-  #         name: install npm
-  #         become: yes
-  #         command: |
-  #           apk add --update npm
-  #     - run:
-  #         name: install pm2 after installing npm
-  #         become: yes
-  #         command: |
-  #           npm install pm2 -g      
-  #     - run:
-  #         name: Deploy backend
-  #         command: |
-  #           cd backend
-  #           npm install
-  #           npm update
-  #           npm audit fix --force
-  #           npm run build
-  #           cd ..
-  #           # Zip the directory
-  #           tar -C backend -czvf artifact.tar.gz .
-  #           cd .circleci/ansible
-  #           echo "Contents  of the inventory.txt file is -------"
-  #           cat inventory.txt
-  #           ansible-playbook -i inventory.txt deploy-backend.yml
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - project
-  #     - destroy_environments      
+  deploy-backend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install_awscli
+      - install_ansible
+      - install_nodejs
+      - add_ssh_keys:
+          fingerprints: ["7d:69:fe:fc:fb:e5:18:eb:a8:d9:75:a5:7b:70:cb:72"]
+      - attach_workspace:
+          at: ~/
+      - restore_cahce:
+          keys:[backend-mybuild]    
+      - run:
+          name: Install Dependancies
+          command: |
+            cd backend
+            npm install
+      - run:
+          name: package backend
+          command: |
+            cd backend      
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cp artifact.tar.gz ./circleci/ansible/roles/deploy/files
+      - run:
+          name: Deploy Backend
+          command: |
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts      
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy_environments
+      - revert_migrations      
   notify_on_success:
     docker:
       - image: cimg/base:stable
@@ -374,10 +372,10 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend
-      #     #requires: [run-migrations]    
-      # - deploy-backend
-      #     #requires: [deploy-frontend]    
+      - deploy-frontend
+          requires: [run-migrations]    
+      - deploy-backend
+          requires: [run-migrations]    
       - notify_on_success:
           requires: [build-frontend, build-backend, test-frontend, test-backend, 
                     scan-frontend, scan-backend, deploy-infrastructure, 
