@@ -341,6 +341,7 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy_environments
       - revert_migrations      
+ 
   notify_on_success:
     docker:
       - image: cimg/base:stable
@@ -372,9 +373,9 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend
+      - deploy-frontend:
           requires: [run-migrations]    
-      - deploy-backend
+      - deploy-backend:
           requires: [run-migrations]    
       - notify_on_success:
           requires: [build-frontend, build-backend, test-frontend, test-backend, 
