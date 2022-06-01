@@ -44,7 +44,7 @@ commands:
           name: revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insurance https://kvdb.io/BbSEdx5hwR5B6tMh7cgiF2/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl --insecure https://kvdb.io/BbSEdx5hwR5B6tMh7cgiF2/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if ((SUCCESS == 1));
             then
               cd ~/project/backend
@@ -57,7 +57,7 @@ commands:
       - run:
           name: install nodejs 13
           command: |
-            curl -fsSL -o https://rpm.nodesource.com/setup_13.x | sudo -E bash -
+            curl -fsSL -o https://npm.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt install -y nodejs
 nodedoker: &nodedoker
   docker:
