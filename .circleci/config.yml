@@ -290,7 +290,6 @@ jobs:
             cd backend      
             npm run build
             cd ..
-            # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             cp artifact.tar.gz ./.circleci/ansible/roles/deploy/files
       - run:
@@ -325,8 +324,8 @@ jobs:
         - run:
             name: Backend smoke test.
             command: |
-              curl -s $API_URL/api/status
-              if curl -s $API_URL/api/status | grep "ok"
+              curl -s ${API_URL}/api/status
+              if curl -s ${API_URL}/api/status | grep "ok"
               then
                 exit 0
               else
