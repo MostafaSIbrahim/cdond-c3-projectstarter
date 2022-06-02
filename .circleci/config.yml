@@ -340,8 +340,8 @@ jobs:
               else
                 exit 2
               fi    
-        - destroy_environments
-        - revert_migrations
+        # - destroy_environments
+        # - revert_migrations
  
   notify_on_success:
     docker:
