@@ -348,6 +348,14 @@ jobs:
       - install_awscli
       - install_nodejs
       - run:
+          name: Save old value for cloudfront in kvdb
+          command: |
+            export OLD_WORKFLOW_ID=$(aws cloudfront \
+              list-exports --query "Exports[?Name==\'WorkflowID\'].Value" \
+              --no-paginate --output text)
+            echo "Old Workflow ID: $OLD_WORKFLOW_ID"
+            curl https://kvdb.io/BbSEdx5hwR5B6tMh7cgiF2/old_workflow_id -d "${OLD_WORKFLOW_ID}"  
+      - run:
           name: Update cloudfront distribution
           command: |
             aws cloudformation deploy \
@@ -356,6 +364,7 @@ jobs:
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
       - destroy_environments
       - revert_migrations
+
   cleanup:
       docker:
         - image: cimg/base:stable
@@ -418,8 +427,8 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]            
+      - cloudfront-update:
+          requires: [smoke-test]            
       # - cleanup:
       #     requires: [cloudfront-update]    
       - notify_on_success:
