@@ -350,7 +350,7 @@ jobs:
       - run:
           name: Save old value for cloudfront in kvdb
           command: |
-            export OLD_WORKFLOW_ID=$(aws cloudfront \
+            export OLD_WORKFLOW_ID=$(aws cloudformation \
               list-exports --query "Exports[?Name==\'WorkflowID\'].Value" \
               --no-paginate --output text)
             echo "Old Workflow ID: $OLD_WORKFLOW_ID"
@@ -375,10 +375,8 @@ jobs:
         - run:
             name: Get old stack workflow id and delete old resources
             command: |
-              export OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-              --no-paginate --output text)
-              echo OldWorkflowID: "${OldWorkflowID}"
+              export OldWorkflowID=$(curl --insecure https://kvdb.io/BbSEdx5hwR5B6tMh7cgiF2/old_workflow_id)
+              echo OldWorkflowID: $OldWorkflowID
               echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
